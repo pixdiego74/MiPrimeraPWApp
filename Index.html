@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X UA Compatible" content="ie=edge">
+
+    <title>MY FIRST PWA - UTR</title>
+
+    <meta name="theme.color" content="#317EFB">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="images/star_favorite_5754.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <head>
+        <h1>Progressive Web Appplication</h1>
+    </head>
+    <main>
+        <p>Welcome to development environment at week 2</p>
+    </main>
+    <script>
+        if('serviceWorker' in navigator){
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('Service Worker registered', reg))
+                .catch (err => console.warn('Error in SW register', err));
+            });
+        }
+    </script>
+</body>
+
+</html>
