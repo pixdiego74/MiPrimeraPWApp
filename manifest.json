@@ -1,0 +1,16 @@
+{
+    "name": "Mi primera PWA",
+    "short_name": "PWA-UTP",
+    "atart_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#FFFFFF",
+    "theme_color": "#317EFB",
+    "icons":
+    [
+        {
+            "src": "images/star_favorite_5754.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        }
+    ]
+}
