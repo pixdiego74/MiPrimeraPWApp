@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>MY FIRST PWA - UTR</title>
+    <title>Week 6 SSR VS CSR</title>
 
     <meta name="theme-color" content="#317EFB">
     <link rel="manifest" href="manifest.json">
@@ -16,34 +16,19 @@
 <body>
 
     <!-- HEADER -->
-    <header class="header">
-        <h1>Progressive Web Application</h1>
+    <header class="app-shell-header">
+        <h1>Mi Gestor de Tareas</h1>
     </header>
 
-    <!-- NAVIGATION BAR -->
-    <nav class="navbar">
-        <ul>
-            <li><a href="#">Inicio</a></li>
-            <li><a href="#">Servicios</a></li>
-            <li><a href="#">Acerca</a></li>
-            <li><a href="#">Contacto</a></li>
-        </ul>
-    </nav>
-
     <!-- CONTENT -->
-    <main class="content">
-        <p>Welcome to development environment at week 2</p>
-
-        <p>
-            Este contenido puede cambiar o crecer sin afectar
-            el header, la barra de navegación o el footer.
-        </p>
+    <main id="app-content">
+        <ul id="task-list">
+            <!-- <li>Tarea 1: Aprender conceptos de SSR (Viene en el HTML)</li> -->
+            <!-- <li>Tarea 2: Entender el flujo de red (Viene en el HTML)</li> -->
+        </ul>
     </main>
 
-    <!-- FOOTER -->
-    <footer class="footer">
-        <p>© 2026 - UTR | PWA Example</p>
-    </footer>
+    <script src="app.js"></script>
 
     <script>
         if ('serviceWorker' in navigator) {
