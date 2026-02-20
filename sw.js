@@ -13,4 +13,10 @@ self.addEventListener('activate', event => {
 // 3: Evento Fetch: Interceptar cada peticion al servidor 
 self.addEventListener('fetch', event => {
     console.log('SW: Interceptando peticiones, ejemplo: ', event.request.url);
+    if(event.request.url.includes('style.css')){
+        console.log('El SW ha detectado que pides el CSS. Podemos bloquearlo o cambiarlo');
+        //Agregar mensaje si estas offline
+    }
 });
+
+// Tarea: Cambiar el archivo css e INYECTAR el style 2 css. Con evento. Crear style2.css.
