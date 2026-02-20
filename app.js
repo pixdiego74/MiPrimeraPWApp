@@ -1,3 +1,11 @@
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('Service Worker registered', reg))
+        .catch(err => console.warn('Error in SW register', err));
+    });
+}
+
 //CSR
 const tasklist = document.getElementById("task-list");
 
@@ -45,3 +53,4 @@ async function fetchRemoteTask() {
 }
 
 window.addEventListener('load', fetchRemoteTask);
+//CSR vs CCR
