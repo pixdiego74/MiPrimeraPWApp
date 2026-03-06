@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,22 +15,27 @@
 </head>
 
 <body>
-
     <!-- HEADER -->
     <header class="app-shell-header">
         <h1>Mi Gestor de Tareas</h1>
+        <div id="status-online" class="status online">En linea</div>
     </header>
 
     <!-- CONTENT -->
     <main id="app-content">
-        <ul id="task-list">
-            <!-- <li>Tarea 1: Aprender conceptos de SSR (Viene en el HTML)</li> -->
-            <!-- <li>Tarea 2: Entender el flujo de red (Viene en el HTML)</li> -->
-        </ul>
+        <form action="form-tarea">
+            <input type="text" id="input-tarea" placeholder="¿Que hay que hacer?" required>
+            <button type="submit">Guardar Tarea</button>
+        </form>
+
+        <section>
+            <h2>Tareas Guardadas</h2>
+            <ul id="lista-tareas">
+            </ul>
+        </section>
     </main>
-
+    <script src="db.js"></script>
     <script src="app.js"></script>
-
 </body>
 </html>
 
