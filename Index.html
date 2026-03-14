@@ -1,44 +1,36 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-    <title>Week 6 SSR VS CSR</title>
-
+    <title>Inventory Registration System</title>
     <meta name="theme-color" content="#317EFB">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="images/star_favorite_5754.png">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <!-- HEADER -->
     <header class="app-shell-header">
-        <h1>Mi Gestor de Tareas</h1>
-        <div id="status-online" class="status online">En linea</div>
+        <h1>Registro de Inventario</h1>
+        <div id="status-online" class="status online">En línea</div>
     </header>
 
-    <!-- CONTENT -->
     <main id="app-content">
-        <form action="form-tarea">
-            <input type="text" id="input-tarea" placeholder="¿Que hay que hacer?" required>
-            <button type="submit">Guardar Tarea</button>
+        <form id="form-producto">
+            <input type="text" id="nombre-producto" placeholder="Nombre del producto" required>
+            <input type="number" id="cantidad-producto" placeholder="Cantidad" min="1" required>
+            <button type="submit">Guardar Producto</button>
         </form>
 
         <section>
-            <h2>Tareas Guardadas</h2>
-            <ul id="lista-tareas">
-            </ul>
+            <h2>Productos Guardados</h2>
+            <ul id="lista-productos"></ul>
         </section>
     </main>
+    
     <script src="db.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
-
-<!-- APP Shell es el contenido minimo que debe de tener una pagina para ser manejable(en este caso seria este tipo de DOM).-->
-<!-- Estatico:  Contenido que no cambia (Aqui es casi el DOM por completo). -->
-<!--Dinamico:  Contenido que cambia segun que ususario este usando el software (Podria ser el contenido donde se le inyecta codigo conectado a APIs o bases de datos). -->

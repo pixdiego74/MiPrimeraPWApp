@@ -1,7 +1,7 @@
 {
-    "name": "Mi primera PWA",
-    "short_name": "PWA-UTP",
-    "atart_url": "./index.html",
+    "name": "Inventory Registration System",
+    "short_name": "Inventario",
+    "start_url": "./index.html",
     "display": "standalone",
     "background_color": "#FFFFFF",
     "theme_color": "#317EFB",

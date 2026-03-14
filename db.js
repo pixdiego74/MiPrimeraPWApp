@@ -1,56 +1,75 @@
 let db;
-const request = indexedDB.open('TareasDB', 1);
+const request = indexedDB.open('InventarioDB', 1);
 
-//Verification DB
+// Configuración inicial de la base de datos
 request.onupgradeneeded = (event) => {
     db = event.target.result;
-    if(!db.objectStoreNames.contains('pendientes')){
-        db.createObjectStore('pendientes', {keyPath: 'id', autoIncrement: true});
+    if (!db.objectStoreNames.contains('productos')) {
+        // Crear store con auto-increment en id
+        db.createObjectStore('productos', { keyPath: 'id', autoIncrement: true });
+        console.log('Store "productos" creado');
     }
-}
+};
 
 request.onsuccess = (event) => {
     db = event.target.result;
-    console.log('IndexDB ready');
-    mostrarTareas(); //Show task list
-}
+    console.log('IndexedDB: InventarioDB lista y conectada');
+    
+    // Cargar productos cuando la BD esté lista
+    if (typeof mostrarProductos === 'function') {
+        mostrarProductos();
+    }
+};
 
-function insertarTareaDB(titulo) {
-    const transaction = db.transaction(['pendientes'], 'readwrite');
-    const store = transaction.objectStore('pendientes');
+request.onerror = (event) => {
+    console.error('Error al abrir IndexedDB:', event.target.error);
+};
 
-    const nuevoTarea = {
-        titulo: titulo,
-        fecha: new Date().toLocaleDateString()
+// Función para insertar producto
+function insertarProductoDB(nombre, cantidad) {
+    const transaction = db.transaction(['productos'], 'readwrite');
+    const store = transaction.objectStore('productos');
+
+    const nuevoProducto = {
+        nombre: nombre,
+        cantidad: parseInt(cantidad),
+        fechaRegistro: new Date().toLocaleString()
     };
 
-    const query = store.add(nuevoTarea);
+    const query = store.add(nuevoProducto);
 
     query.onsuccess = () => {
-        console.log('Task saved in DB');
-        mostrarTareas(); //Show task list
-    }
+        console.log('Producto guardado en IndexedDB');
+        if (typeof mostrarProductos === 'function') {
+            mostrarProductos();
+        }
+    };
+
+    query.onerror = (error) => {
+        console.error('Error al guardar producto:', error);
+    };
 }
 
-function mostrarTareas(){
-    const listUL = document.getElementById('lista-tareas');
-    listUL.innerHTML = ''; //Clean html
+// Función para obtener todos los productos
+function obtenerProductos(callback) {
+    const transaction = db.transaction(['productos'], 'readonly');
+    const store = transaction.objectStore('productos');
+    const productos = [];
 
-    const transaction = db.transaction(['pendientes'], 'readonly');
-    const store = transaction.objectStore('pendientes');
-    const consoleRequest = store.openCursor();
+    const cursorRequest = store.openCursor();
 
-    cursorRequest.onsuccess = () => {
-        const cursor = event.tarjet.result;
-    
-        if(cursor){
-            const li = document.createElement('li');
-            li.innerHTML = `
-            <span>${cursor.value.titulo}</span>
-            <small>${cursor.value.fecha}</small>
-            `;
-            listUL.appendChild(li);
+    cursorRequest.onsuccess = (event) => {
+        const cursor = event.target.result;
+        if (cursor) {
+            productos.push(cursor.value);
             cursor.continue();
+        } else {
+            callback(productos);
         }
-    }
+    };
+
+    cursorRequest.onerror = (error) => {
+        console.error('Error al leer productos:', error);
+        callback([]);
+    };
 }

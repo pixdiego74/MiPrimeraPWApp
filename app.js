@@ -1,84 +1,84 @@
+// ===== REGISTRO DEL SERVICE WORKER =====
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('Service Worker registered', reg))
-        .catch(err => console.warn('Error in SW register', err));
+            .then(reg => console.log('Service Worker registrado correctamente:', reg.scope))
+            .catch(err => console.warn('Error al registrar el Service Worker:', err));
     });
 }
 
-// //CSR
-// const tasklist = document.getElementById("task-list");
-
-// //Array CSR
-// const tareasLocales = [
-//     "Tarea desde JS: Configurar Entorno",
-//     "Tarea desde JS: Probar Live Server",
-//     "Tarea desde JS: Analizar El DOM",
-// ];
-
-// function renderLocalTask(){
-//     tasklist.innerHTML = "";
-//     tareasLocales.forEach(tarea => {
-//         const li = document.createElement("li");
-//         li.textContent = tarea;
-//         tasklist.appendChild(li);
-//     });
-// }
-
-// //renderLocalTask();
-
-// async function fetchRemoteTask() {
-//     const container = document.getElementById("app-content");
-//     //Mostrar estado de carga
-//     container.innerHTML = '<p class="loading">Cargando datos de la API externa...</p>';
-
-//     try{
-//         const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=5');
-//         const posts = await response.json();
-
-//         //Limpiar contenedor y nueva lista
-//         container.innerHTML = '<ul id="task-list"></ul>';
-//         const newList = document.getElementById('task-list');
-
-//         //Renderizar
-//         posts.forEach(post => {
-//             const li = document.createElement('li');
-//             li.innerHTML = `<strong>${post.title}<strong/><br><small>${post.body}<small/>`;
-//             newList.appendChild(li);
-//         });
-//     }catch (error){
-//         container.innerHTML = '<p style="color:red">Error al cargar los datos, tienes internet?</p>';
-//         console.error("Error en fetch: ", error);
-//     }
-// }
-
-// window.addEventListener('load', fetchRemoteTask);
-//CSR vs CCR
-
-
-const form = document.getElementById('form-tarea');
-const input = document.getElementById('input-tarea');
+// ===== ELEMENTOS DEL DOM =====
+const form = document.getElementById('form-producto');
+const inputNombre = document.getElementById('nombre-producto');
+const inputCantidad = document.getElementById('cantidad-producto');
+const listaProductos = document.getElementById('lista-productos');
 const statusDiv = document.getElementById('status-online');
 
-//Handle send form
-form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const texto = input.ariaValueMax.trim();
-    if(texto !== ""){
-        insertarTareaDB(texto);
-        input.value = '';
-        input.focus();
-    }
-});
-
+// ===== ESTADO DE CONEXIÓN =====
 window.addEventListener('online', () => {
-    statusDiv.textContent = 'En linea';
+    statusDiv.textContent = 'En línea';
     statusDiv.className = 'status online';
-
 });
 
 window.addEventListener('offline', () => {
-    statusDiv.textContent = 'Modo Offline (Guardado en el dispositivo)';
+    statusDiv.textContent = 'Modo Offline (Guardado localmente)';
     statusDiv.className = 'status offline';
+});
 
+// Verificar estado inicial
+if (!navigator.onLine) {
+    statusDiv.textContent = 'Modo Offline (Guardado localmente)';
+    statusDiv.className = 'status offline';
+}
+
+// ===== MANEJADOR DEL FORMULARIO =====
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const nombre = inputNombre.value.trim();
+    const cantidad = inputCantidad.value.trim();
+    
+    if (nombre !== '' && cantidad !== '') {
+        insertarProductoDB(nombre, cantidad);
+        inputNombre.value = '';
+        inputCantidad.value = '';
+        inputNombre.focus();
+    }
+});
+
+// ===== FUNCIÓN PARA MOSTRAR PRODUCTOS =====
+function mostrarProductos() {
+    obtenerProductos((productos) => {
+        listaProductos.innerHTML = ''; // Limpiar lista
+        
+        if (productos.length === 0) {
+            const li = document.createElement('li');
+            li.innerHTML = '<span class="loading">No hay productos registrados</span>';
+            listaProductos.appendChild(li);
+            return;
+        }
+        
+        // Ordenar por ID descendente (más recientes primero)
+        productos.reverse().forEach(producto => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <div class="producto-info">
+                    <span class="producto-nombre">${producto.nombre}</span>
+                    <span class="producto-cantidad">Cantidad: ${producto.cantidad}</span>
+                </div>
+                <small>${producto.fechaRegistro || ''}</small>
+            `;
+            listaProductos.appendChild(li);
+        });
+    });
+}
+
+// Hacer la función global para que db.js pueda llamarla
+window.mostrarProductos = mostrarProductos;
+
+// Cargar productos cuando la página esté lista
+document.addEventListener('DOMContentLoaded', () => {
+    if (db) {
+        mostrarProductos();
+    }
 });
