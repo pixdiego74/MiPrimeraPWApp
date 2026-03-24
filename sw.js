@@ -107,3 +107,11 @@ self.addEventListener('message', event => {
         self.skipWaiting();
     }
 });
+
+self.addEventListener('message', event => {
+    if(event.data.type === "SHOW_NOTIFICATION"){
+        self.registration.showNotification("Success", {
+            body: event.data.message,
+        });
+    }
+})

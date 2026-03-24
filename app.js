@@ -31,6 +31,26 @@ if (!navigator.onLine) {
     statusDiv.className = 'status offline';
 }
 
+// LOCAL NOTIFICATION
+if ("Notification" in window){
+    Notification.requestPermission().then(Permission => {
+        console.log("Notification permission", Permission)
+    });
+}
+
+function enviarNotification(mensaje){
+    if ("serviceWorker" in navigator && Notification.permission === "granted"){
+        navigator.serviceWorker.ready.then(reg => {
+            if(reg.active){
+                reg.active.postMessage({
+                    type: "SHOW_NOTIFICATION",
+                    message: mensaje,
+                });
+            }
+        });
+    }
+}
+
 // ===== MANEJADOR DEL FORMULARIO =====
 form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -44,6 +64,9 @@ form.addEventListener('submit', (e) => {
         inputCantidad.value = '';
         inputNombre.focus();
     }
+
+    enviarNotification("Item guardado")
+    form.reset() //???????????????????
 });
 
 // ===== FUNCIÓN PARA MOSTRAR PRODUCTOS =====
