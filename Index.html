@@ -2,44 +2,141 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Inventory Registration System</title>
-    <meta name="theme-color" content="#317EFB">
+    <title>GeoReport - Sistema de Gestión de Incidencias</title>
+    <meta name="theme-color" content="#1976D2">
+    <meta name="description" content="Reporta incidencias con ubicación y fotografía">
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="images/star_favorite_5754.png">
+    <link rel="icon" href="images/icon-192x192.png">
     <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-
 <body>
-    <header class="app-shell-header">
-        <h1>Registro de Inventario</h1>
-        <div id="status-online" class="status online">En línea</div>
-    </header>
-
-    <main id="app-content">
-        <form id="form-producto">
-            <input type="text" id="nombre-producto" placeholder="Nombre del producto" required>
-            <input type="number" id="cantidad-producto" placeholder="Cantidad" min="1" required>
-            <button type="submit">Guardar Producto</button>
-        </form>
-
-        <section>
-            <h2>Productos Guardados</h2>
-            <ul id="lista-productos"></ul>
-        </section>
-
-        <!-- Sección de Cámara -->
-        <section>
-            <h2>Tomar Foto</h2>
-            <video id="videoElement" autoplay style="width: 100%; max-width: 400px; border: 1px solid #ccc;"></video>
-            <div style="text-align: center; margin: 10px 0;">
-                <button id="takeSnap">Tomar Foto</button>
+    <!-- App Shell -->
+    <div class="app-shell">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-title">
+                <i class="fas fa-map-marker-alt"></i>
+                <h1>GeoReport</h1>
             </div>
-            <canvas id="canvasEl" style="display: none;"></canvas>
-        </section>
-    </main>
-    
+            <div id="status-online" class="status online">
+                <i class="fas fa-wifi"></i>
+                <span>En línea</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main id="app-content" class="app-content">
+            <!-- Lista de Reportes -->
+            <section class="reports-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-list"></i> Mis Reportes</h2>
+                    <span id="report-count" class="badge">0</span>
+                </div>
+                <div id="lista-reportes" class="reports-list">
+                    <div class="loading-skeleton">
+                        <div class="skeleton-item"></div>
+                        <div class="skeleton-item"></div>
+                        <div class="skeleton-item"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- FAB (Floating Action Button) -->
+        <button id="fab-create" class="fab" aria-label="Crear reporte">
+            <i class="fas fa-plus"></i>
+        </button>
+
+        <!-- Modal para crear reporte -->
+        <div id="modal-reporte" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-exclamation-triangle"></i> Nuevo Reporte</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                
+                <form id="form-reporte">
+                    <div class="form-group">
+                        <label for="tipo-incidencia">
+                            <i class="fas fa-tag"></i> Tipo de Incidencia
+                        </label>
+                        <select id="tipo-incidencia" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="luminaria">💡 Luminaria fundida</option>
+                            <option value="bache">🕳️ Bache</option>
+                            <option value="computo">💻 Equipo de cómputo dañado</option>
+                            <option value="limpieza">🗑️ Problema de limpieza</option>
+                            <option value="seguridad">🔒 Seguridad</option>
+                            <option value="otro">📝 Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descripcion">
+                            <i class="fas fa-file-alt"></i> Descripción
+                        </label>
+                        <textarea id="descripcion" rows="3" placeholder="Describe detalladamente la incidencia..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-camera"></i> Evidencia Fotográfica
+                        </label>
+                        <div class="camera-container">
+                            <video id="videoPreview" autoplay playsinline></video>
+                            <canvas id="canvasPhoto" style="display: none;"></canvas>
+                            <button type="button" id="btn-tomar-foto" class="btn-secondary">
+                                <i class="fas fa-camera"></i> Tomar Foto
+                            </button>
+                            <div id="foto-preview" class="foto-preview" style="display: none;">
+                                <img id="foto-tomada" alt="Vista previa">
+                                <button type="button" id="btn-remover-foto" class="btn-remove">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-map-pin"></i> Ubicación
+                        </label>
+                        <div class="location-info">
+                            <div id="ubicacion-status" class="location-status">
+                                <i class="fas fa-spinner fa-spin"></i> Obteniendo ubicación...
+                            </div>
+                            <div id="coordenadas" style="display: none;">
+                                <small>
+                                    <i class="fas fa-latitude"></i> Lat: <span id="latitud">-</span><br>
+                                    <i class="fas fa-longitude-alt"></i> Lon: <span id="longitud">-</span>
+                                </small>
+                            </div>
+                            <button type="button" id="btn-actualizar-ubicacion" class="btn-small">
+                                <i class="fas fa-sync-alt"></i> Actualizar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel">Cancelar</button>
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-save"></i> Guardar Reporte
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Offline Toast -->
+        <div id="toast-message" class="toast" style="display: none;">
+            <span id="toast-text"></span>
+        </div>
+    </div>
+
     <script src="db.js"></script>
     <script src="app.js"></script>
 </body>

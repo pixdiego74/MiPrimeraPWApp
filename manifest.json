@@ -1,16 +1,17 @@
 {
-    "name": "Inventory Registration System",
-    "short_name": "Inventario",
-    "start_url": "./index.html",
-    "display": "standalone",
-    "background_color": "#FFFFFF",
-    "theme_color": "#317EFB",
-    "icons":
-    [
-        {
-            "src": "images/star_favorite_5754.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        }
-    ]
+  "name": "GeoReport - Sistema de Gestión de Incidencias",
+  "short_name": "GeoReport",
+  "description": "Reporta incidencias con ubicación y evidencia fotográfica",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#1976D2",
+  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
 }
