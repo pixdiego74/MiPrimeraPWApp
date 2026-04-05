@@ -1,4 +1,5 @@
 const CACHE_NAME = 'inventory-pwa-v1';
+const PHOTOS_CACHE = 'fotos-cache-v1';
 const STATIC_FILES = [
     '/',
     '/index.html',
@@ -37,7 +38,7 @@ self.addEventListener('activate', event => {
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.map(cacheName => {
-                    if (cacheName !== CACHE_NAME) {
+                    if (cacheName !== CACHE_NAME && cacheName !== PHOTOS_CACHE) {
                         console.log('SW: Eliminando cache antigua:', cacheName);
                         return caches.delete(cacheName);
                     }
@@ -50,11 +51,37 @@ self.addEventListener('activate', event => {
     );
 });
 
-// 3. FETCH: Estrategia Cache First
+// 3. FETCH: Manejar peticiones incluyendo las fotos
 self.addEventListener('fetch', event => {
-    console.log('SW: Interceptando petición:', event.request.url);
+    const url = new URL(event.request.url);
     
-    // Solo aplicar estrategia a recursos estáticos y navegación
+    // Si es una petición de foto (contiene '/fotos/')
+    if (event.request.url.includes('/fotos/')) {
+        console.log('SW: Interceptando foto:', event.request.url);
+        event.respondWith(
+            caches.open(PHOTOS_CACHE).then(cache => {
+                return cache.match(event.request).then(cachedResponse => {
+                    if (cachedResponse) {
+                        console.log('SW: Sirviendo foto desde cache');
+                        return cachedResponse;
+                    }
+                    // Si no está en cache, buscar de la red
+                    return fetch(event.request).then(networkResponse => {
+                        if (networkResponse && networkResponse.status === 200) {
+                            cache.put(event.request, networkResponse.clone());
+                        }
+                        return networkResponse;
+                    }).catch(error => {
+                        console.error('SW: Error al cargar foto:', error);
+                        return new Response('Foto no disponible', { status: 404 });
+                    });
+                });
+            })
+        );
+        return;
+    }
+    
+    // Para archivos estáticos (estrategia Cache First)
     if (event.request.method === 'GET') {
         event.respondWith(
             caches.match(event.request)
@@ -67,14 +94,11 @@ self.addEventListener('fetch', event => {
                     console.log('SW: No encontrado en cache, buscando en red:', event.request.url);
                     return fetch(event.request)
                         .then(networkResponse => {
-                            // Verificar si la respuesta es válida
                             if (!networkResponse || networkResponse.status !== 200) {
                                 return networkResponse;
                             }
                             
-                            // Clonar la respuesta para poder cachearla
                             const responseToCache = networkResponse.clone();
-                            
                             caches.open(CACHE_NAME)
                                 .then(cache => {
                                     cache.put(event.request, responseToCache);
@@ -85,7 +109,6 @@ self.addEventListener('fetch', event => {
                         })
                         .catch(error => {
                             console.log('SW: Error de red - Modo offline:', error);
-                            // Aquí podrías devolver una página de fallback offline
                             return new Response('Estás offline. Algunos recursos no están disponibles.', {
                                 status: 503,
                                 statusText: 'Service Unavailable'
@@ -99,19 +122,17 @@ self.addEventListener('fetch', event => {
     }
 });
 
-// Manejar mensajes desde la app (opcional)
+// Manejar mensajes desde la app
 self.addEventListener('message', event => {
     console.log('SW: Mensaje recibido:', event.data);
     
     if (event.data === 'skipWaiting') {
         self.skipWaiting();
     }
-});
-
-self.addEventListener('message', event => {
+    
     if(event.data.type === "SHOW_NOTIFICATION"){
         self.registration.showNotification("Success", {
             body: event.data.message,
         });
     }
-})
+});

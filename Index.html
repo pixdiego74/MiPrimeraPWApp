@@ -28,6 +28,16 @@
             <h2>Productos Guardados</h2>
             <ul id="lista-productos"></ul>
         </section>
+
+        <!-- Sección de Cámara -->
+        <section>
+            <h2>Tomar Foto</h2>
+            <video id="videoElement" autoplay style="width: 100%; max-width: 400px; border: 1px solid #ccc;"></video>
+            <div style="text-align: center; margin: 10px 0;">
+                <button id="takeSnap">Tomar Foto</button>
+            </div>
+            <canvas id="canvasEl" style="display: none;"></canvas>
+        </section>
     </main>
     
     <script src="db.js"></script>
